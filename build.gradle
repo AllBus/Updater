@@ -1,0 +1,80 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.8'
+    }
+}
+
+plugins {
+    id 'scala'
+    id 'com.google.protobuf' version '0.8.8'
+
+}
+
+ext {
+    scalapbVersion = '0.10.0-M4'
+}
+
+dependencies {
+
+}
+
+group 'com.kos.kit'
+version '1.0'
+
+sourceCompatibility = 1.7
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation "org.scala-lang:scala-library:2.11.12"
+    implementation 'com.github.AllBus:ProtobufAndroidIO:406476d7de'
+    implementation "com.thesamet.scalapb:scalapb-runtime_2.11:${scalapbVersion}"
+    implementation "com.squareup.okhttp3:okhttp:4.4.0"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.4.0"
+}
+
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.11.4'
+    }
+    plugins {
+        scalapb {
+            artifact = (org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem().isWindows()) ?
+                    "com.thesamet.scalapb:protoc-gen-scala:${scalapbVersion}:windows@bat" :
+                    "com.thesamet.scalapb:protoc-gen-scala:${scalapbVersion}:unix@sh"
+        }
+    }
+
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                // if you don't want java code to be generated.
+                //remove java
+            }
+            task.plugins {
+                scalapb {
+                    // option 'grpc'
+                    // add any ScalaPB generator options here. See: https://scalapb.github.io/scalapbc.html#passing-generator-parameters
+                    // option 'flat_package'
+                }
+            }
+        }
+    }
+}
+
+sourceSets {
+    main {
+        scala {
+            srcDirs "${protobuf.generatedFilesBaseDir}/main/scalapb"
+        }
+    }
+}
+

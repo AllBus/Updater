@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+//version 200321
+
+package com.kos.kit.proto;
+
+message RequestCheckLastVersion {
+    string group = 1;       //Название программы: codes
+    string name = 2;        //Название файла, который хотим загрузить: krf
+
+}
+
+message ResponseCheckLastVersion {
+    string group = 1;       //Название программы: codes
+    string name = 2;        //Название файла, который хотим загрузить: krf
+    int32  version = 3;     //Текущая версия файла на сервере
+    int64  updateDate = 4;  //Время последнего обновления
+    string url = 5;         //URL фдрес по которому можно загрузить файл
+}
+
+
+service UpdaterService {
+    rpc checkCheckLastVersion(RequestCheckLastVersion) returns (ResponseCheckLastVersion) {}
+}
